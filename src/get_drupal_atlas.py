@@ -45,6 +45,8 @@ def get_hovedfunn_title(file_content):
          return(line.strip())
 
 def get_hovedfunn_content(file_content, img_path):
+    # Get the main content from a hovedfunn page
+    # Retun a md text string
     html_content = ""
     collecting = False
     mod_img_path = img_path.replace("output/", "/helseatlas/")
@@ -63,9 +65,12 @@ def get_hovedfunn_content(file_content, img_path):
             elif re.search("element-invisible", line):
                 pass
             else:
-                html_content = html_content + line
+                # Remove year range in the beginning of each section
+                test_string = re.sub("<div class=\"field-item even\">\d*-\d*</div>", "", line)
+                html_content = html_content + test_string
     markdown = markdownify.markdownify(html_content, heading_style = "ATK")
 
+#    print(markdown)
     return(markdown + "\n\n\n")
 
 def get_figures(file_content, path):
@@ -135,4 +140,3 @@ for details in glob.glob("atlas/*/details"):
 
         except:
             print("file " + entry + " not found!")
-
