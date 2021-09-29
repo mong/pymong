@@ -70,6 +70,19 @@ def get_hovedfunn_content(file_content, img_path):
                 html_content = html_content + test_string
     markdown = markdownify.markdownify(html_content, heading_style = "ATK")
 
+    # clean up file
+    markdown = (markdown
+                .replace(".png) *", ".png)\n\n*")
+                .replace(".png) Figur", ".png)\n\n*Figur")
+                .replace("\n## Bakgrunn", "\n### Bakgrunn")
+                .replace("\n## Result", "\n### Result")
+                .replace("\n## Kommentar", "\n### Kommentar")
+                .replace("  #", "#")
+                .replace(".**", ".** ")
+                .replace("\n## Utvikling fra", "\n### Utvikling fra")
+                .replace("\n## Funn", "\n### Funn")
+                )
+
     return(markdown + "\n\n\n")
 
 def get_figures(file_content, path):
@@ -110,18 +123,19 @@ def get_hovedfunn_start(file_content):
     
     return(markdownify.markdownify(return_string.strip(), heading_style = "ATK"))
 
-def create_md_heading(atlas_num):
+def create_md_heading(atlas_num, rapport):
     short_title = atlas[atlas_num][1]
     date = atlas[atlas_num][4]
     heading = '''---
 num: {0}
 mainTitle: {1}
 shortTitle: {1}
+pdfUrl: {2}
 ---
 
 ## Innhold
 
-'''.format(date, short_title)
+'''.format(date, short_title, rapport)
 
     return(heading)
     
@@ -130,6 +144,20 @@ if not os.path.exists("output/md/no"):
     os.makedirs("output/md/no")
 if not os.path.exists("output/md/en"):
     os.makedirs("output/md/en")
+
+def get_report(file_content, path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    for line in file_content:
+        if re.search("atlas-button report", line):
+            try:
+                filename = line.split("\"")[1].replace("https://helseatlas.no/", "")
+                copy(filename, path)
+            except:
+                filename = str(line).split("\"")[11].replace("https://helseatlas.no/", "")
+                copy(filename, path)
+            only_name = filename.split("/")[-1]
+            return(only_name)
 
 for details in glob.glob("atlas/*/details"):
     atlas_num = int(details.split("/")[1])
@@ -143,8 +171,9 @@ for details in glob.glob("atlas/*/details"):
     detailsfile_content = get_file_content(details)
     entries = get_hovedfunn_order(detailsfile_content)
     hovedfunn_start = get_hovedfunn_start(detailsfile_content)
+    rapport_name = get_report(detailsfile_content, "output/files")
 
-    md_heading = create_md_heading(atlas_num)
+    md_heading = create_md_heading(atlas_num, "/helseatlas/files/" + rapport_name)
 
     md_file = open(md_name, "w")
     md_file.write(md_heading + hovedfunn_start)
