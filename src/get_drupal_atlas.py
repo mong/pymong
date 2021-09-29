@@ -6,28 +6,28 @@ import markdownify
 from shutil import copy
 import glob
 
-atlas = {1: "no/barn",
-         39: "no/dagkir",
-         49: "no/nyfodt",
-         90: "no/eldre",
-         117: "en/dagkir",
-         118: "en/barn",
-         120: "en/nyfodt",
-         121: "en/eldre",
-         123: "no/kols",
-         131: "en/kols",
-         138: "no/ortopedi",
-         150: "no/dagkir2",
-         154: "en/dagkir2",
-         155: "no/gyn",
-         157: "no/fodsel",
-         158: "en/gyn",
-         178: "en/fodsel",
-         184: "en/ortopedi",
-         259: "no/psyk",
-         260: "no/kvalitet",
-         274: "en/psyk",
-         279: "en/kvalitet"
+atlas = {1:   ["no/barn", "Barnehelseatlas, 2011–2014", "2015-09-01", "9 2015"],
+         39:  ["no/dagkir", "Dagkirurgi,  2011–2013", "2015-01-01", "1 2015"],
+         49:  ["no/nyfodt", "Nyfødtmedisin, 2009–2014", "2016-12-01", "12 2016"],
+         90:  ["no/eldre", "Eldrehelseatlas, 2013–2015", "2017-06-01", "6 2017"],
+         117: ["en/dagkir", "Day surgery atlas, 2011–2013", "2017-09-01", "9 2017"],
+         118: ["en/barn", "Child Healthcare Atlas, 2011–2014", "2017-09-02", "9 2017"],
+         120: ["en/nyfodt", "Neonatal Atlas, 2009–2014", "2017-09-03", "9 2017"],
+         121: ["en/eldre", "Elderly Healthcare Atlas, 2013–2015", "2017-09-04", "9 2017"],
+         123: ["no/kols", "Kols, 2013–2015", "2017-10-01", "10 2017"],
+         131: ["en/kols", "COPD healthcare atlas, 2013–2015", "2018-03-01", "3 2018"],
+         138: ["no/ortopedi", "Ortopedi, 2012–2016", "2018-12-01", "12 2018"],
+         150: ["no/dagkir2", "Dagkirurgi, 2013–2017", "2018-11-01", "11 2018"],
+         154: ["en/dagkir2", "Day surgery atlas 2013–2017", "2018-12-01", "12 2018"],
+         155: ["no/gyn", "Gynekologi, 2015–2017", "2019-01-01", "1 2019"],
+         157: ["no/fodsel", "Fødselshjelp, 2015–2017", "2019-04-01", "4 2019"],
+         158: ["en/gyn", "Gynaecology, 2015–2017", "2019-05-01", "5 2019"],
+         178: ["en/fodsel", "Obstetrics 2015–2017", "2019-08-01", "8 2019"],
+         184: ["en/ortopedi", "Orthopaedic, 2012-2016", "2019-08-01", "8 2019"],
+         259: ["no/psyk", "Psykisk helsevern og TSB, 2014-2018", "2020-06-01", "6 2020"],
+         260: ["no/kvalitet", "Kvalitet, 2017–2019", "2021-01-01", "1 2021"],
+         274: ["en/psyk", "Mental Healthcare 2014-2018", "2021-01-01", "1 2021"],
+         279: ["en/kvalitet", "Healthcare Quality Atlas", "2021-08-01", "8 2021"],
          }
 
 def map_hovedfunn_atlas(file_content):
@@ -70,7 +70,6 @@ def get_hovedfunn_content(file_content, img_path):
                 html_content = html_content + test_string
     markdown = markdownify.markdownify(html_content, heading_style = "ATK")
 
-#    print(markdown)
     return(markdown + "\n\n\n")
 
 def get_figures(file_content, path):
@@ -89,7 +88,13 @@ def get_hovedfunn_order(file_content):
     hovedfunn = []
     for line in file_content:
         if re.search("<a href=\"/hovedfunn", line):
-            hovedfunn.append("hovedfunn/" + line.replace("%C3%B8", "ø").replace("%C3%A6", "æ").replace("%C3%A5", "å").replace("%C2%A0", "").split(">")[4].split("/")[-1].replace("\"", ""))
+            hovedfunn.append("hovedfunn/" + line
+            .replace("%C3%B8", "ø")
+            .replace("%C3%A6", "æ")
+            .replace("%C3%A5", "å")
+            .replace("%C2%A0", "")
+            .split(">")[4].split("/")[-1]
+            .replace("\"", ""))
     return(hovedfunn)
 
 def get_hovedfunn_start(file_content):
@@ -105,6 +110,22 @@ def get_hovedfunn_start(file_content):
     
     return(markdownify.markdownify(return_string.strip(), heading_style = "ATK"))
 
+def create_md_heading(atlas_num):
+    short_title = atlas[atlas_num][1]
+    date = atlas[atlas_num][2]
+    heading = '''---
+date: A{0}T00:00:00.960Z
+mainTitle: {1}
+shortTitle: {1}
+---
+
+## Innhold
+
+'''.format(date, short_title)
+
+    return(heading)
+    
+
 if not os.path.exists("output/md/no"):
     os.makedirs("output/md/no")
 if not os.path.exists("output/md/en"):
@@ -112,7 +133,7 @@ if not os.path.exists("output/md/en"):
 
 for details in glob.glob("atlas/*/details"):
     atlas_num = int(details.split("/")[1])
-    atlas_name = atlas[atlas_num]
+    atlas_name = atlas[atlas_num][0]
 
     img_path = "output/img/" + atlas_name
     md_name = "output/md/" + atlas_name + ".md"
@@ -123,8 +144,10 @@ for details in glob.glob("atlas/*/details"):
     entries = get_hovedfunn_order(detailsfile_content)
     hovedfunn_start = get_hovedfunn_start(detailsfile_content)
 
+    md_heading = create_md_heading(atlas_num)
+
     md_file = open(md_name, "w")
-    md_file.write(hovedfunn_start)
+    md_file.write(md_heading + hovedfunn_start)
     md_file.close()
 
     for entry in entries:
