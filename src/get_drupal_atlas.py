@@ -75,8 +75,10 @@ def get_hovedfunn_content(file_content, img_path):
                 .replace(".png) *", ".png)\n\n*")
                 .replace(".png) Figur", ".png)\n\n*Figur")
                 .replace("\n## Bakgrunn", "\n### Bakgrunn")
+                .replace("\n## Background", "\n### Background")
                 .replace("\n## Result", "\n### Result")
                 .replace("\n## Kommentar", "\n### Kommentar")
+                .replace("\n## Comments", "\n### Comments")
                 .replace("  #", "#")
                 .replace(".**", ".** ")
                 .replace("\n## Utvikling fra", "\n### Utvikling fra")
@@ -101,13 +103,17 @@ def get_hovedfunn_order(file_content):
     hovedfunn = []
     for line in file_content:
         if re.search("<a href=\"/hovedfunn", line):
-            hovedfunn.append("hovedfunn/" + line
+            hovedfunn.append("hovedfunn/" + (line
             .replace("%C3%B8", "ø")
             .replace("%C3%A6", "æ")
             .replace("%C3%A5", "å")
             .replace("%C2%A0", "")
             .split(">")[4].split("/")[-1]
-            .replace("\"", ""))
+            .replace("\"", "")))
+        if re.search("<a href=\"/en/hovedfunn", line):
+            hovedfunn.append("en/hovedfunn/" + (line
+            .split(">")[4].split("/")[-1]
+            .replace("\"", "")))
     return(hovedfunn)
 
 def get_hovedfunn_start(file_content):
