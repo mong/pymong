@@ -6,28 +6,28 @@ import markdownify
 from shutil import copy
 import glob
 
-atlas = {1:   ["no/barn", "Barnehelseatlas, 2011–2014", "2015-09-01", "9 2015", "2"],
-         39:  ["no/dagkir", "Dagkirurgi,  2011–2013", "2015-01-01", "1 2015", "1"],
-         49:  ["no/nyfodt", "Nyfødtmedisin, 2009–2014", "2016-12-01", "12 2016", "3"],
-         90:  ["no/eldre", "Eldrehelseatlas, 2013–2015", "2017-06-01", "6 2017", "4"],
-         117: ["en/dagkir", "Day surgery atlas, 2011–2013", "2017-09-01", "9 2017", "1"],
-         118: ["en/barn", "Child Healthcare Atlas, 2011–2014", "2017-09-02", "9 2017", "2"],
-         120: ["en/nyfodt", "Neonatal Atlas, 2009–2014", "2017-09-03", "9 2017", "3"],
-         121: ["en/eldre", "Elderly Healthcare Atlas, 2013–2015", "2017-09-04", "9 2017", "4"],
-         123: ["no/kols", "Kols, 2013–2015", "2017-10-01", "10 2017", "5"],
-         131: ["en/kols", "COPD healthcare atlas, 2013–2015", "2018-03-01", "3 2018", "5"],
-         138: ["no/ortopedi", "Ortopedi, 2012–2016", "2018-12-01", "12 2018", "7"],
-         150: ["no/dagkir2", "Dagkirurgi, 2013–2017", "2018-11-01", "11 2018", "6"],
-         154: ["en/dagkir2", "Day surgery atlas 2013–2017", "2018-12-01", "12 2018", "6"],
-         155: ["no/gyn", "Gynekologi, 2015–2017", "2019-01-01", "1 2019", "8"],
-         157: ["no/fodsel", "Fødselshjelp, 2015–2017", "2019-04-01", "4 2019", "9"],
-         158: ["en/gyn", "Gynaecology, 2015–2017", "2019-05-01", "5 2019", "8"],
-         178: ["en/fodsel", "Obstetrics 2015–2017", "2019-08-01", "8 2019", "9"],
-         184: ["en/ortopedi", "Orthopaedic, 2012-2016", "2019-08-01", "8 2019", "7"],
-         259: ["no/psyk", "Psykisk helsevern og TSB, 2014-2018", "2020-06-01", "6 2020", "10"],
-         260: ["no/kvalitet", "Kvalitet, 2017–2019", "2021-01-01", "1 2021", "11"],
-         274: ["en/psyk", "Mental Healthcare 2014-2018", "2021-01-01", "1 2021", "10"],
-         279: ["en/kvalitet", "Healthcare Quality Atlas", "2021-08-01", "8 2021", "11"],
+atlas = {1:   ["no/barn", "Barnehelseatlas, 2011–2014", "2015-09-01", "Barnehelseatlas for Norge", "2"],
+         39:  ["no/dagkir", "Dagkirurgi,  2011–2013", "2015-01-01", "Dagkirurgi i Norge 2011–2013", "1"],
+         49:  ["no/nyfodt", "Nyfødtmedisin, 2009–2014", "2016-12-01", "Norsk nyfødtmedisinsk helseatlas", "3"],
+         90:  ["no/eldre", "Eldrehelseatlas, 2013–2015", "2017-06-01", "Eldrehelseatlas for Norge", "4"],
+         117: ["en/dagkir", "Day surgery atlas, 2011–2013", "2017-09-01", "Day surgery in Norway 2011 - 2013", "1"],
+         118: ["en/barn", "Child Healthcare Atlas, 2011–2014", "2017-09-02", "Child healthcare atlas for Norway", "2"],
+         120: ["en/nyfodt", "Neonatal Atlas, 2009–2014", "2017-09-03", "The Norwegian Neonatal Healthcare Atlas, 2009-2014", "3"],
+         121: ["en/eldre", "Elderly Healthcare Atlas, 2013–2015", "2017-09-04", "Healthcare Atlas for the Elderly in Norway", "4"],
+         123: ["no/kols", "Kols, 2013–2015", "2017-10-01", "Helseatlas kols", "5"],
+         131: ["en/kols", "COPD healthcare atlas, 2013–2015", "2018-03-01", "COPD Healthcare Atlas", "5"],
+         138: ["no/ortopedi", "Ortopedi, 2012–2016", "2018-12-01", "Helseatlas i ortopedi for Noreg", "7"],
+         150: ["no/dagkir2", "Dagkirurgi, 2013–2017", "2018-11-01", "Dagkirurgi i Norge 2013–2017", "6"],
+         154: ["en/dagkir2", "Day surgery atlas 2013–2017", "2018-12-01", "Day surgery in Norway 2013–2017", "6"],
+         155: ["no/gyn", "Gynekologi, 2015–2017", "2019-01-01", "Helseatlas for gynekologi", "8"],
+         157: ["no/fodsel", "Fødselshjelp, 2015–2017", "2019-04-01", "Helseatlas for fødselshjelp", "9"],
+         158: ["en/gyn", "Gynaecology, 2015–2017", "2019-05-01", "Gynaecology Healthcare Atlas", "8"],
+         178: ["en/fodsel", "Obstetrics 2015–2017", "2019-08-01", "Obstetrics Healthcare Atlas", "9"],
+         184: ["en/ortopedi", "Orthopaedic, 2012-2016", "2019-08-01", "Orthopaedic Healthcare Atlas for Norway", "7"],
+         259: ["no/psyk", "Psykisk helsevern og TSB, 2014-2018", "2020-06-01", "Helseatlas for psykisk helsevern og rusbehandling", "10"],
+         260: ["no/kvalitet", "Kvalitet, 2017–2019", "2021-01-01", "Helseatlas for kvalitet", "11"],
+         274: ["en/psyk", "Mental Healthcare 2014-2018", "2021-01-01", "Healthcare Atlas for Mental Healthcare and Substance Abuse Treatment", "10"],
+         279: ["en/kvalitet", "Healthcare Quality Atlas", "2021-08-01", "Healthcare Quality Atlas", "11"],
          }
 
 def map_hovedfunn_atlas(file_content):
@@ -124,18 +124,19 @@ def get_hovedfunn_start(file_content):
     return(markdownify.markdownify(return_string.strip(), heading_style = "ATK"))
 
 def create_md_heading(atlas_num, rapport):
+    main_title = atlas[atlas_num][3]
     short_title = atlas[atlas_num][1]
-    date = atlas[atlas_num][4]
+    num = atlas[atlas_num][4]
     heading = '''---
 num: {0}
 mainTitle: {1}
-shortTitle: {1}
-pdfUrl: {2}
+shortTitle: {2}
+pdfUrl: {3}
 ---
 
 ## Innhold
 
-'''.format(date, short_title, rapport)
+'''.format(num, main_title, short_title, rapport)
 
     return(heading)
     
