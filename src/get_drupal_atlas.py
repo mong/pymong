@@ -166,6 +166,34 @@ def get_report(file_content, path):
             only_name = filename.split("/")[-1]
             return(only_name)
 
+def create_local_files(file_content, path = "output/files"):
+    new_file_content = ""
+    for line in file_content.split("\n"):
+        if re.search("\/sites\/default\/files", line):
+            try:
+                filename = (line
+                            .split("](")[1]
+                            .replace("https://helseatlas.no/", "")
+                            .replace("http://helseatlas.loc/", "")
+                            .replace("http://helseatlas.no.loc/", "")
+                            .replace("http://helseatlas.no/", "")
+                            .replace("/sites/", "sites/")
+                            .split(")")[0])
+                copy(filename, path)
+                only_name = filename.split("/")[-1]
+                old_url = line.split("](")[1].split(")")[0]
+                new_file_content = new_file_content + (line
+                                                      .replace(old_url, "/helseatlas/files/" + only_name)) + "\n"
+
+            except:
+                print("Can not copy " + filename + " (from line " + line + ")")
+        elif re.search("download\?token", line):
+            pass
+        else:
+            new_file_content = new_file_content + line + "\n"
+    return(new_file_content)
+
+
 for details in glob.glob("atlas/*/details"):
     atlas_num = int(details.split("/")[1])
     atlas_name = atlas[atlas_num][0]
@@ -178,8 +206,9 @@ for details in glob.glob("atlas/*/details"):
     detailsfile_content = get_file_content(details)
     entries = get_hovedfunn_order(detailsfile_content)
     hovedfunn_start = get_hovedfunn_start(detailsfile_content)
-    rapport_name = get_report(detailsfile_content, "output/files")
+    hovedfunn_start = create_local_files(hovedfunn_start)
 
+    rapport_name = get_report(detailsfile_content, "output/files")
     md_heading = create_md_heading(atlas_num, "/helseatlas/files/" + rapport_name)
 
     md_file = open(md_name, "w")
@@ -191,6 +220,8 @@ for details in glob.glob("atlas/*/details"):
             file_content = get_file_content(entry)
             title_line = get_hovedfunn_title(file_content)
             hovedfunn = get_hovedfunn_content(file_content, img_path)
+            hovedfunn = create_local_files(hovedfunn)
+
             md_file = open(md_name, "a")
             md_file.write(hovedfunn)
             md_file.close()
