@@ -67,6 +67,7 @@ def get_hovedfunn_content(file_content, img_path):
             else:
                 # Remove year range in the beginning of each section
                 test_string = re.sub("<div class=\"field-item even\">\d*-\d*</div>", "", line)
+                test_string = re.sub("<div class=\"field-item even\">\d* - \d*</div>", "", test_string)
                 html_content = html_content + test_string
     markdown = markdownify.markdownify(html_content, heading_style = "ATK")
 
@@ -83,6 +84,22 @@ def get_hovedfunn_content(file_content, img_path):
                 .replace(".**", ".** ")
                 .replace("\n## Utvikling fra", "\n### Utvikling fra")
                 .replace("\n## Funn", "\n### Funn")
+                .replace(".* Opptaksområdet har færre enn", ". \*Opptaksområdet har færre enn")
+                .replace(". * Opptaksområdet har færre enn", ". \*Opptaksområdet har færre enn")
+                .replace(". *Opptaksområdet har færre enn", ". \*Opptaksområdet har færre enn")
+                .replace(". * opptaksområdet har færre enn", ". \*Opptaksområdet har færre enn")
+                .replace(". *Referral area has fewer than", ". \*Referral area has fewer than")
+                .replace(".* Referral area has fewer than", ". \*Referral area has fewer than")
+                .replace(".*Referral area has fewer than", ". \*Referral area has fewer than")
+                .replace("Figur 1: ", "")
+                .replace("Figur 2: ", "")
+                .replace("**Figur 1.**", "**Figur:**")
+                .replace("**Figur 1**.", "**Figur:**")
+                .replace("**Figur 2.**", "**Figur:**")
+                .replace("**Figur 2**.", "**Figur:**")
+                .replace("**Figur 3.**", "**Figur:**")
+                .replace("**Figur 3**.", "**Figur:**")
+                .replace("\n## \n", "\n")
                 )
 
     return(markdown + "\n\n\n")
@@ -146,12 +163,6 @@ pdfUrl: {3}
 
     return(heading)
     
-
-if not os.path.exists("output/md/no"):
-    os.makedirs("output/md/no")
-if not os.path.exists("output/md/en"):
-    os.makedirs("output/md/en")
-
 def get_report(file_content, path):
     if not os.path.exists(path):
         os.makedirs(path)
@@ -186,13 +197,17 @@ def create_local_files(file_content, path = "output/files"):
                                                       .replace(old_url, "/helseatlas/files/" + only_name)) + "\n"
 
             except:
-                print("Can not copy " + filename + " (from line " + line + ")")
+                pass
         elif re.search("download\?token", line):
             pass
         else:
             new_file_content = new_file_content + line + "\n"
     return(new_file_content)
 
+if not os.path.exists("output/md/no"):
+    os.makedirs("output/md/no")
+if not os.path.exists("output/md/en"):
+    os.makedirs("output/md/en")
 
 for details in glob.glob("atlas/*/details"):
     atlas_num = int(details.split("/")[1])
